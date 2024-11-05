@@ -44,7 +44,7 @@ Modify this list in `filemodes.js` - see **File Modes** under Options menu.
 
 ![CodeScriber](images/CS1.png "CodeScriber") ![CodeScriber](images/CS2.png "CodeScriber")  
 
-[Documentation](CSdoc.html "title")
+[Documentation](CSdoc.md "title")
 
 ---
 
