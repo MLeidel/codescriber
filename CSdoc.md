@@ -200,19 +200,21 @@ In the editor, type _input_ and press Alt-Z
 
 ## Enclosing text with markup hotkeys
 
-There is an array to hold up to 7 surrounding markup texts.  
+There is an array to hold up to 10 (0-9) surrounding markup texts.  
 Defaults are set in the `stag.js` file.  
 
-    var stag = ["dummy,dummy",  
-      "<center>,</center>",  
-      "<strong>,</strong>",  
-      "<code>,</code>",  
-      "<h1>,</h1>",  
-      "<h2>,</h2>",  
-      "_,_",  
-      "**,**"];  
+        var stag = ["<strong>,</strong>",
+                    "<center>,</center>",
+                    "<em>,</em>",
+                    "<code>,</code>",
+                    "<dt>,</dt>",
+                    "<dd>,</dd>",
+                    "<div id=''>,</div>",
+                    "<span id='',</span>",
+                    "_,_",
+                    "**,**"];
 
-Apply these to selected text using Ctrl-1,2,3,...   
+Apply these to selected text using Ctrl-0,1,2,...9  
 Change any of them for current session using Ctrl-G.  
 Edit the defaults in the **Options** menu "Enclosures".
 
