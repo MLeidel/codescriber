@@ -1,0 +1,695 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+	<title>CodeScriber</title>
+
+<!-- Use one of these in the link below, then edit the #editor ID in cs.css -->
+    <!-- <link href='https://fonts.googleapis.com/css?family=Roboto+Mono:400' rel='stylesheet' type='text/css'> -->
+    <!-- <link href='https://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'> -->
+    <!-- <link href='https://fonts.googleapis.com/css?family=PT+Mono'   rel='stylesheet' type='text/css'> -->
+    <!-- <link href='https://fonts.googleapis.com/css?family=Oxygen+Mono' rel='stylesheet' type='text/css'> -->
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro" rel="stylesheet" type='text/css'> -->
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet"> -->
+    <!-- <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet"> -->
+
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="cs.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/ace.js"
+    type="text/javascript" charset="utf-8"></script>
+<!--
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/ext-language_tools.js"
+    type="text/javascript" charset="utf-8"></script>
+-->
+  <script src="tags.js" defer></script> <!-- Zen tags library -->
+  <script src="stag.js" defer></script> <!-- Surround tags library -->
+  <script src="myJS.js"></script> <!-- A JQuery like library -->
+  <script src="filemodes.js"></script> <!-- Ace syntax theme library -->
+
+</head>
+
+<body>
+  <div style="margin-left:50px;"> <!-- Menus -->
+    <ul>
+        <li>
+            <a href="#">File</a>
+            <ul class="dropdown-content">
+                <li><a onclick="newFile();">New</a></li>
+                <li><a onclick="openFile();">Open</a></li>
+                <li><a onclick="openRecent();" title="">Recent</a></li>
+                <li><a onclick="save();" title="Ctrl-Shft-S">Save-As</a></li>
+                <li><a onclick="quicksaveDocument();" title="Ctrl-S">Save</a></li>
+                <li><a onclick="exitApp();" title="Ctrl-Q">Exit</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#">Tools</a>
+            <ul class="dropdown-content">
+                <li><a onclick="execTerm();"    title="open">Terminal</a></li>
+                <li><a onclick="execFMgr();"    title="open">File Mgr</a></li>
+                <li><a onclick="execBrowser();" title="open in browser">Browser</a></li>
+                <li><a onclick="mdCurrent();"   title="View HTML">Markdown</a></li>
+                <li><a onclick="execI();"       title="Ctrl--">Run 1</a></li>
+                <li><a onclick="execII();"      title="Ctrl-=">Run 2</a></li>
+                <li><a onclick="findfile();"    title="search filesystem">Find File</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#">Options</a>
+            <ul class="dropdown-content">
+                <li><a onclick="openOptionFile('filemodes.js');"
+                        title="Edit File Modes/Themes">File Modes</a></li>
+                <li><a onclick="openOptionFile('tags.js');"
+                        title="Edit JSON array of Zen tags">Zen Tags</a></li>
+                <li><a onclick="openOptionFile('stag.js');"
+                        title="Edit the 7 text enclosures">Enclosures</a></li>
+                <li><a onclick="openOptionFile('options.ini');"
+                        title="Edit the options.ini file">Options</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#">Help</a>
+            <ul class="dropdown-content">
+                <li><a onclick="showMessageBox(msg);">
+                                                About</a></li>
+                <li><a href="CSdoc.html"
+                        target="_blank">Documentation</a></li>
+            </ul>
+        </li>
+        <li> <input type=text id="FN" />
+    </ul>
+  </div>
+
+<!-- Context Menu -->
+
+    <div id="customContextMenu" class="context-menu">
+        <em><div class="context-menu-item">Open</div></em>
+        <em><div class="context-menu-item">Save-As</div></em>
+        <div class="context-menu-item">Terminal</div>
+        <div class="context-menu-item">File Mgr</div>
+        <div class="context-menu-item">Browser</div>
+        <div class="context-menu-item">Markdown</div>
+        <div class="context-menu-item">Run 1</div>
+        <div class="context-menu-item">Run 2</div>
+    </div>
+
+<!-- Special Messagebox -->
+
+    <div id="overlay1" class="overlay"> <!-- Hidden -->
+        <div class="messageBox">
+            <p id="messageBoxText"></p>
+            <button id="msg_close_1" class="closeBtn">Close</button>
+        </div>
+    </div>
+
+<!-- Ace Editor -->
+
+<div id="editor"></div>
+
+<!-- ==================================================================== -->
+
+<script>
+
+    var contextMenu = JS.doq('#customContextMenu');
+    var filename = "";
+    var gvar = {
+        oFN : null,
+        fname : "",
+        saved : true,
+        last_pre_tag : "",
+        last_pst_tag : ""
+    };
+
+
+    gvar.oFN = JS.doq("#FN"); // object for the filename input field
+
+    console.clear();
+	var editor = ace.edit("editor");
+    // ACE CONFIGURE
+    editor.$blockScrolling = Infinity;  // ace debug suggestion
+    editor.setShowPrintMargin(false);
+    editor.setHighlightActiveLine(false);
+    editor.session.setTabSize(2);
+    // document.getElementById('editor').style.fontSize='12pt';
+    // SEE CSS #editor FOR FONT STYLING //
+    /////////////////////////////////////
+    // Enable the autocompletion
+    // editor.setOptions({
+    //     enableBasicAutocompletion: true,
+    //     enableSnippets: false,
+    //     enableLiveAutocompletion: false
+    // });
+
+  ///////// ADD (ACE) CUSTOM HOT KEYS //////////
+    editor.commands.addCommand({
+        name: 'htmlBreak',
+        bindKey: {win: 'Ctrl-Enter', mac: 'Command-Enter'},
+        exec: function(editor) {
+            editor.insert("<br>");
+        },
+        readOnly: false // Do NOT apply this command in readOnly mode
+    });
+    editor.commands.addCommand({
+        name: 'saveFile',
+        bindKey: {win: 'Ctrl-s', mac: 'Command-s'},
+        exec: function(editor) {
+            quicksaveDocument();
+        },
+        readOnly: false
+    });
+    editor.commands.addCommand({
+        name: 'saveAsFile',
+        bindKey: {win: 'Ctrl-Shift-s', mac: 'Command-s'},
+        exec: function(editor) {
+            save();
+        },
+        readOnly: false
+    });
+    editor.commands.addCommand({
+        name: 'htmlNbsp',
+        bindKey: {win: 'Ctrl-Space', mac: 'Command-Space'},
+        exec: function(editor) {
+            editor.insert("&nbsp;");
+        },
+        readOnly: false
+    });
+    editor.commands.addCommand({
+            name: 'insertDate',
+            bindKey: {win: 'Alt-t', mac: 'Alt-t'},
+            exec: function(editor) {
+                editor.insert(JS.getMDY());
+            },
+            readOnly: false
+    });
+    // add command to lazy-load keybinding_menu extension
+    editor.commands.addCommand({
+        name: "showAllKBshortcuts",
+        bindKey: {win: "Ctrl-Alt-h", mac: "Command-Alt-h"},
+        exec: function(editor) {
+            ace.config.loadModule("ace/ext/keybinding_menu", function(module) {
+                module.init(editor);
+                editor.showKeyboardShortcuts();
+            });
+        }
+    });
+
+
+    // ZenTags
+	editor.commands.addCommand({
+			name: 'myCommand',
+			bindKey: {win: 'Alt-Z',	mac: 'Alt-Z'},
+			exec: function(editor) {
+			  zentag();
+			},
+			readOnly: true // false if this command should not apply in readOnly mode
+	});
+
+    editor.commands.addCommand({
+            name: 'viewTagsJS',
+            bindKey: {win: 'Alt-x', mac: 'Alt-x'},
+            exec: function(editor) {
+                viewZenTags();
+            },
+            readOnly: false
+    });
+
+    editor.commands.addCommand({
+            name: 'viewStag',
+            bindKey: {win: 'Ctrl-Alt-x', mac: 'Ctrl-Alt-x'},
+            exec: function(editor) {
+                viewStags();
+            },
+            readOnly: false
+    });
+
+    editor.commands.addCommand({
+            name: 'repeatEnclose',
+            bindKey: {win: 'Alt-w', mac: 'Alt-w'},
+            exec: function(editor) {
+                tagSurround(gvar.last_pre_tag, gvar.last_pst_tag);
+            },
+            readOnly: false
+    });
+
+    //editor.session.setUseSoftTabs(true); // not needed
+    editor.setTheme("ace/theme/text");
+    // editor.getSession().setMode("ace/mode/text");
+
+
+    // the following toggles the 'save' button if the text is "dirty" or "saved"
+
+    editor.on("input", function() {
+            gvar.saved = editor.session.getUndoManager().isClean();
+    });
+
+    window.addEventListener('beforeunload', function (e) {
+        if (gvar.saved === false)
+            e.preventDefault();  // Cancel the event
+          else
+            e.returnValue = 'prompt';  // fire the confirm prompt
+    });
+
+/* Context Menu Event Handlers */
+
+    editor.container.addEventListener('contextmenu', function(event) {
+        event.preventDefault();
+        contextMenu.style.top = event.clientY + 'px';
+        contextMenu.style.left = event.clientX + 'px';
+        contextMenu.style.display = 'block';
+    });
+
+    document.addEventListener('click', function() {
+        contextMenu.style.display = 'none';
+    });
+
+    contextMenu.addEventListener('click', function(event) {
+        var target = event.target;
+        if (target.classList.contains('context-menu-item')) {
+            contextMenu.style.display = 'none';
+            mItem = target.innerText;
+            switch (mItem) {
+                case "Open":
+                    openFile();
+                    break;
+                case "Save-As":
+                    save_File();
+                    break;
+                case "Browser":
+                    execBrowser();
+                    break;
+                case "Markdown":
+                    mdCurrent();
+                    break;
+                case "Run 1":
+                    execI();
+                    break;
+                case "Run 2":
+                    execII();
+                    break;
+                case "Terminal":
+                    execTerm();
+                    break;
+                case "File Mgr":
+                    execFMgr();
+                    break;
+            }
+        }
+    });
+
+// "execCurrent();"
+// "mdCurrent();"
+// "execTerm();"
+// "execFMgr();"
+// "execBrowser();"
+// "execI();"
+// "execII();"
+// "findfile();"
+
+/***
+This function enhances the Alt-z code insertion
+***/
+
+    function zentag() {
+      let wsp = [9,10,32, NaN];  // tab, LF, space
+      let inx = 0;
+      let code = 0;
+      let txtbuf = "";
+      let targ = "";
+      inx = editor.session.doc.positionToIndex(editor.selection.getCursor());
+      txtbuf = editor.getValue();
+      code = txtbuf.charCodeAt(inx);
+      if (!wsp.includes(code)) return;  // must be at right whitespace boundary
+      inx -= 1;
+      if (inx < 0) return;
+      code = txtbuf.charCodeAt(inx);
+      while (!wsp.includes(code)) {
+        //console.log(inx);
+        targ = String.fromCharCode(code) + targ;
+        inx -= 1;
+        if (inx >= 0)
+          code = txtbuf.charCodeAt(inx);
+        else
+          break;
+      }
+      // targ should contain the key to look for
+      editor.removeWordLeft();
+      if (atags[targ] !== undefined) {
+        editor.insert(atags[targ]);  // targ is a valid key value
+      } else {  // stag not a valid key value so do this instead
+        editor.insert("<" + targ + "></" + targ + ">");
+      }
+    }
+
+/***
+ *                           _        _
+ *      _ __ _  ___ __ _____| |____ _(_)_____ __ __
+ *     | '_ \ || \ V  V / -_) '_ \ V / / -_) V  V /
+ *     | .__/\_, |\_/\_/\___|_.__/\_/|_\___|\_/\_/
+ *     |_|   |__/
+    Javascript pywebview API functions to connect Python */
+
+    function getFN() {
+        window.pywebview.api.getFileName().then(content => {
+          setFileName(content);
+        });
+    }
+
+    function openFile() {  // executes python/tkinter code
+        window.pywebview.api.open_file().then(content => {
+          loadDocument(content);
+        });
+    }
+
+    function save_File(content) {  // executes python/tkinter code
+        window.pywebview.api.save_file(content).then(content => {
+            setFileName(content);
+        });
+    }
+
+    function quicksaveFile(content) {  // executes python/tkinter code
+        window.pywebview.api.quick_save_file(content).then(content => {
+        });
+    }
+
+    function on_close() {
+            window.pywebview.api.onClose();  // immediate close no ask
+    }
+
+    function openCmdFile() {
+        window.pywebview.api.getCmdFile().then(content => {
+            loadDocument(content);
+        });
+    }
+
+    function mdCurrent() {
+        window.pywebview.api.execMarkdown();  // open md in browser
+    }
+
+    function execFMgr() {
+        window.pywebview.api.execFileMgr();  // open file manager
+    }
+
+    function execTerm() {
+        window.pywebview.api.execTerminal();  // open terminal
+    }
+
+    function execBrowser() {
+        window.pywebview.api.execWebbrowser();  // open current in browser
+    }
+
+    function execI() {
+        window.pywebview.api.exec1();  // open
+    }
+
+    function execII() {
+        window.pywebview.api.exec2();  // open
+    }
+
+    function openOptionFile(loadfilename) {  // option file to open is content
+        window.pywebview.api.openSelected(loadfilename).then(content => {
+            showMessageBox("<br><br>If this file is modified,<br>Restart CodeScriber to activate.")
+            loadDocument(content);
+        });
+    }
+
+    function DropOpenFile(filename) {
+        /* gets the string of possible fullpaths from python */
+        window.pywebview.api.on_file_drop(filename).then(content => {
+            // content is the csv string of possible paths/files
+            selectFile(content);
+        });
+    }
+
+    function openRecent() {
+        /* gets the Recent Files csv string from python */
+        window.pywebview.api.returnRecents().then(content => {
+            selectFile(content);
+        });
+    }
+
+    function loadSelected(content) {
+        /* python reads the selected file ( from selectFile() )
+        and returns its content to be loaded into Ace editor */
+        window.pywebview.api.openSelected(content).then(content => {
+          JS.doq('#overlay1').style.display = 'none';
+          loadDocument(content);
+        });
+    }
+
+
+/* ------------------------------------------------------------------------- */
+
+            /* handler functions working with webview functions */
+
+    function selectFile(content) {
+        /* presents an array of fullpaths for user selection
+            used by openRecent and DropOpenFile */
+        let x = 0;
+        let sfile = "";
+        let msg = "";
+        let files = content.split(",");
+        
+        for (x=0; x < files.length; x++) {
+            sfile = convertPath(files[x]);
+            msg += `<a onclick="loadSelected('${sfile}')">${sfile}</a><br>`;
+        }
+        showMessageBox(msg);
+    }
+
+    function convertPath(filePath) { // for Windows
+        // replace backslashes with slashes (see selectFile())
+        return filePath.replace(/\\/g, '/');
+    }
+
+    function findfile() {
+        filename = prompt("enter the filename to find:")
+        DropOpenFile(filename)
+    }
+
+    function setSaved() {
+        // resets the boolean variable for state of editor (clean/dirty)
+        gvar.saved = editor.getSession().setUndoManager(new ace.UndoManager());
+    }
+
+    function loadDocument(text) {
+        // return here after openFile
+      if (text == "") return;
+        editor.setValue(text, -1);
+        getFN();
+    }
+
+    function setFileName(fn) {
+        if (fn !== "") {
+            gvar.fname = fn;
+            setFileMode();
+            editor.clearSelection();
+            JS.val("#FN", gvar.fname);
+            setSaved();
+        }
+    }
+
+    function save() {
+        let text = editor.getValue();
+        save_File(text);
+        getFN();
+    }
+
+    function quicksaveDocument() {
+      if (JS.val("#FN") == "") {
+        save();
+        return;
+      }
+      let text = editor.getValue();
+      quicksaveFile(text); // quicksaveFile save the file with current name
+      setSaved();
+    }
+
+    function newFile() {
+        if (!gvar.saved) {
+            let r = confirm("Current File Not Saved!");
+            if (!r) return;
+        }
+        editor.setValue("", -1);
+        JS.val("#FN", "");
+        setSaved();
+    }
+
+    function tagSurround(prefix, suffix) {
+        // Get the current selection
+        let selectionRange = editor.getSelectionRange();
+        let selectedText = editor.getSession().getTextRange(selectionRange);
+        // Define the text to surround the selection
+        let newText = prefix + selectedText + suffix;
+        // Replace the selected text with the new text
+        editor.getSession().replace(selectionRange, newText);
+    }
+    function setup_tag() {
+        let inx = 0;
+        let tags = prompt("Enter Pre, Post, inx ");
+        if (tags === null) return;
+        const t = tags.split(",");
+        let pre_tag = t[0];
+        let pst_tag = t[1];
+        inx = t[2];
+        if (pre_tag === null) return;
+        if (inx < 0 || inx > 9) return;
+        stag[inx] = pre_tag + "," + pst_tag;
+        showMessageBox("Ctrl-" + inx + " temporarily changed");
+    }
+
+    function convertHTML(str) {
+      const symbols = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&apos;"
+      };
+
+      return str.replace(/([&<>\"'])/g, match => symbols[match]);
+    }
+
+    function viewStags() {
+      let x = 0;
+      let msg = "";
+      for (x=0; x < 10; x++) {
+        msg += x + ". " + convertHTML(stag[x]) + "<br>";
+      }
+      showMessageBox(msg);
+    }
+
+    function viewZenTags() {
+        let str_atags = "ZEN TAGS:<br><br>";
+        Object.keys(atags).forEach(function(key) {
+          str_atags += key +  " | ";
+        });
+        showMessageBox(str_atags);
+    }
+
+    // Function to show the message box
+    function showMessageBox(mtext) {
+        JS.htm('#messageBoxText', mtext);
+        JS.doq('#overlay1').style.display = 'block';
+    }
+
+    // Close the message box when the close button is clicked
+    JS.doq('#msg_close_1').onclick = function() {
+        JS.doq('#overlay1').style.display = 'none';
+    };
+
+    function exitApp() {
+        if (gvar.saved === false) {  //
+            if (confirm("text not saved! Quit anyway?") !== true) {
+                return;
+            } else {
+                editor.destroy();
+                editor.container.remove();
+                on_close();
+            }
+        } else {
+            editor.destroy();
+            editor.container.remove();
+            on_close();
+        }
+    }
+
+    function checkSaved() {
+        if (gvar.saved === false) {
+            gvar.oFN.style.backgroundColor = "#FFE4B5";
+        } else  {
+            gvar.oFN.style.backgroundColor = "#999";
+        }
+        setTimeout(checkSaved, 800);
+    }
+    checkSaved(); // start up the saved checker
+
+
+    /* Open lastfile or file from command line */
+    setTimeout(openCmdFile, 800);
+
+
+                /* Other Keypress handlers */
+
+    window.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            exitApp();
+        }
+      });
+
+    window.addEventListener('keydown', function(event) {
+      if ((event.ctrlKey || event.metaKey) && event.key === 'q') {
+          event.preventDefault();
+          exitApp(); // close application
+      }
+    });
+
+
+    window.addEventListener('keydown', function(event) {
+      if ((event.ctrlKey || event.metaKey) && (event.key >= 0 && event.key < 10)) {
+        event.preventDefault();
+        const t = stag[event.key].split(",");
+        let pre_tag = t[0];
+        let pst_tag = t[1];
+        tagSurround(pre_tag, pst_tag)  // bold for MD
+        gvar.last_pre_tag = pre_tag;  // save for Alt-W repeat last
+        gvar.last_pst_tag = pst_tag;
+      }
+    });
+
+    window.addEventListener('keydown', function(event) {
+      if ((event.ctrlKey || event.metaKey) && event.key === '-') {
+        event.preventDefault();
+        execI();
+      }
+    });
+    window.addEventListener('keydown', function(event) {
+      if ((event.ctrlKey || event.metaKey) && event.key === '=') {
+        event.preventDefault();
+        execII();
+      }
+    });
+
+    window.addEventListener('keydown', function(event) {
+      if ((event.ctrlKey || event.metaKey) && event.key === 'g') {
+          event.preventDefault();
+          setup_tag();
+      }
+    });
+
+                 /* File Drag & Drop Code */
+
+    const dropArea = JS.doq('#FN'); // file input field
+
+    dropArea.addEventListener('dragover', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        dropArea.style.borderColor = '#333';
+    });
+
+    dropArea.addEventListener('dragleave', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        dropArea.style.borderColor = '#ccc';
+    });
+
+    dropArea.addEventListener('drop', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        dropArea.style.borderColor = '#ccc';
+        const files = event.dataTransfer.files;
+        if (files.length > 0) {
+            DropOpenFile(files[0].name)
+        }
+    });
+
+var msg = `
+<b>CodeScriber Editor<br><br>For You!</b><br><br>
+<a href='https://github.com/MLeidel/CodeScriber' target='_blank'>Github</a><br>
+`;
+</script>
+
+</body>
+</html>
