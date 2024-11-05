@@ -29,7 +29,7 @@ _See_ <a href='https://ace.c9.io/'>https://ace.c9.io</a> _for information on the
 - Recent Files
 - Context Menu
 
-[Documentation](CSdoc.html "title")
+[Documentation](CSdoc.md "Doc")
 
 ### CodeScriber combines the following technologies:
 > - python (pywebview, markdown, tkinter.ttk)  
@@ -44,7 +44,7 @@ Modify this list in `filemodes.js` - see **File Modes** under Options menu.
 
 ![CodeScriber](images/CS1.png "CodeScriber") ![CodeScriber](images/CS2.png "CodeScriber")  
 
-[Documentation](CSdoc.md "title")
+[Documentation](CSdoc.md "Doc")
 
 ---
 
