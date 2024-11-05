@@ -105,6 +105,9 @@ def newRecent(item):
 
 def updateRecents(item):
   ''' update the recent file with next item (file) '''
+  if os.path.isfile("recent") == False:
+    with open("recent", "w") as fout:
+        fout.write("options.ini\n")
   loadRecent()  # read in the recent file list
   if item != "":
     newRecent(item)  # put item at the top of list
