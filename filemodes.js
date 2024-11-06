@@ -4,9 +4,9 @@
         */
       let ext;
         ext = gvar.fname.substring( gvar.fname.lastIndexOf(".") + 1 );
-        if (ext === "") {
-            return;
-        }
+        // if (ext === "") {
+        //     return;
+        // }
         /*                      COLOR THEMES
             monokai  cobalt  vibrant_ink  clouds_midnight  solarized_dark
             tomorrow_night_eighties  twilight  kr_theme  Terminal
@@ -31,31 +31,31 @@
             break;
         case "json":
             editor.session.setMode("ace/mode/json");
-            editor.setTheme("ace/theme/tomorrow_night_eighties");
+            editor.setTheme("ace/theme/cobalt");
             break;
         case "sh":
             editor.session.setMode("ace/mode/sh");
-            editor.setTheme("ace/theme/clouds_midnight");
+            editor.setTheme("ace/theme/terminal");
             break;
         case "h":
             editor.session.setMode("ace/mode/c_cpp");
-            editor.setTheme("ace/theme/monokai");
+            editor.setTheme("ace/theme/twilight");
             break;
         case "html":
             editor.session.setMode("ace/mode/html");
-            editor.setTheme("ace/theme/monokai");
+            editor.setTheme("ace/theme/tomorrow_night");
             break;
         case "css":
             editor.session.setMode("ace/mode/css");
-            editor.setTheme("ace/theme/cobalt");
+            editor.setTheme("ace/theme/solarized_dark");
             break;
         case "go":
             editor.session.setMode("ace/mode/golang");
-            editor.setTheme("ace/theme/monokai");
+            editor.setTheme("ace/theme/twilight");
             break;
         case "sql":
             editor.session.setMode("ace/mode/sql");
-            editor.setTheme("ace/theme/twilight");
+            editor.setTheme("ace/theme/monokai");
             break;
         default:
             editor.session.setMode("ace/mode/bash");

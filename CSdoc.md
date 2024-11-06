@@ -38,6 +38,10 @@ __Additional Hotkeys:__
 		<td>Display All Keyboard Shortcuts *</td>
 	</tr>
 	<tr>
+		<td><b>Ctrl-Alt-X</b></td>
+		<td>Display enclosure keys</td>
+	</tr>
+	<tr>
 		<td><b>Esc</b></td>
 		<td>Quit</td>
 	</tr>
@@ -65,7 +69,10 @@ __Additional Hotkeys:__
 		<td><b>Alt-W</b></td>
 		<td>Repeat last text enclosure</td>
 	</tr>
-
+	<tr>
+		<td><b>Ctrl-R</b></td>
+		<td>Recent File List</td>
+	</tr>
 </table>
 
 ---

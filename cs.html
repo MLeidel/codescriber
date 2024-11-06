@@ -626,6 +626,12 @@ This function enhances the Alt-z code insertion
       }
     });
 
+    window.addEventListener('keydown', function(event) {
+      if ( (event.ctrlKey || event.metaKey) && event.key === 'r' ) {
+          event.preventDefault();
+          openRecent(); // show recent file list
+      }
+    });
 
     window.addEventListener('keydown', function(event) {
       if ((event.ctrlKey || event.metaKey) && (event.key >= 0 && event.key < 10)) {
