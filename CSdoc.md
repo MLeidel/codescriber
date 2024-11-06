@@ -10,8 +10,6 @@ For the most detailed information about "Ace" visit the
 _CodeScriber_ is written to be a desktop application. All the software resides on the local machine.  
 For simplicity, the "Ace" library is loaded from a CDN.
 
-Some features have not been activated because I've chosen features specifically for my own use.
-
 _CodeScriber_ is a code editor written completely in scripting languages: HTML, CSS, Javascript, Python3.  
 So theoretically, you could modify it without too much effort, if you want to.
 
