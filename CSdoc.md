@@ -54,7 +54,7 @@ __Additional Hotkeys:__
 		<td>Set up a text encloser</td>
 	</tr>
 	<tr>
-		<td><b>Ctrl-1 through 7</b></td>
+		<td><b>Ctrl-0 through 9</b></td>
 		<td>Enclose with text</td>
 	</tr>
 	<tr>
