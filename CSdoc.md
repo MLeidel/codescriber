@@ -176,8 +176,6 @@ findAll - Ctrl-Alt-K<br>
 </td>
 </tr></table>
 
----
-
 ## *Zen* Tags
 
 The file `tags.js` holds some tags for use with the Zen tag insert feature Alt-Z.
@@ -227,6 +225,7 @@ Edit the defaults in the **Options** menu "Enclosures".
 
 **When working with Markdown, HTML is _generated on every save_.**  
 Use the Tools menu "**Markdown**" to open the HTML in a browser for review.  
+There after refresh the browser whenever the markdown is saved.  
 This Markdown follows rules from the 
 [Markdown 3.7](https://pypi.org/project/Markdown/ "markdown module") python3 module.
 
@@ -235,7 +234,7 @@ This Markdown follows rules from the
 ## options.ini
 
 **CodeScriber options**
-    
+
     future1
     future2
     terminal=gnome-terminal --working-directory=
@@ -281,12 +280,11 @@ Default if you want to use your system default browser.
 >External programs you might want to execute.
 _Ctrl -_ and _Ctrl =_ respectively.
 
-
 ---
 
 ## Run CodeScriber
 
-CodeScriber is run like any other python script.
+CodeScriber is hosted in a python script.
 
 Example:
 
@@ -298,7 +296,7 @@ $>python3 cs.py fileToOpen.js
 or with a Bash file:  
 <code>
 \# cs  
-cd /home/user/ ... /CodeScriber  
+cd /home/user/ ... /codescriber  
 python3 cs.py $1 &
 </code>
 
@@ -355,4 +353,4 @@ This is because pywebview uses Edge components for rendering.
 
 ---
 
-![diagram](images/CSdiag.png "Conceptual")
+> ![diagram](images/CSdiag.png "Conceptual")
